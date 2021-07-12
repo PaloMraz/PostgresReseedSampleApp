@@ -33,11 +33,13 @@ namespace PostgresReseedSampleApp
           {
             await connection.OpenAsync();
             await connection.ExecuteAsync(
-              "insert into __test overriding system value values (100, '100'); " +
+              "insert into __test (name) values ('n1'); " +
+              "insert into __test (name) values ('n2'); " +
+              "insert into __test (name) values ('n3'); " +
               "select setval('__test_id_seq', 1);");
 
             // This fails because name cannot be null, effectively rolling back the transaction.
-            await connection.ExecuteAsync("insert into __test overriding system value values (100, null);");
+            await connection.ExecuteAsync("insert into __test (name) values (null);");
           }
 
           scope.Complete();
@@ -58,7 +60,7 @@ namespace PostgresReseedSampleApp
 
         // Verify the sequence has been reseeded.
         long seed = await connection.QuerySingleAsync<long>("select nextval('__test_id_seq');");
-        Console.WriteLine($"Seed = {seed}"); // <-- Displays correctly: "Seed = 2".
+        Console.WriteLine($"Seed = {seed}"); // <-- Displays : "Seed = 3", which is probably correct :-)
       }
     }
   }
