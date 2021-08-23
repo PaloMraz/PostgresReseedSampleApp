@@ -13,7 +13,7 @@ namespace PostgresReseedSampleApp
   {
     static async Task Main(string[] args)
     {
-      const string ConnectionString = "Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=postgres;";
+      const string ConnectionString = "Server=127.0.0.1;Port=5433;Database=yb_demo;User Id=yugabyte;Password=;";
 
       // Create test table in default "public" scheme.
       using (var connection = new NpgsqlConnection(ConnectionString))
@@ -35,7 +35,7 @@ namespace PostgresReseedSampleApp
             await connection.ExecuteAsync(
               "insert into __test (name) values ('n1'); " +
               "insert into __test (name) values ('n2'); " +
-              "insert into __test (name) values ('n3'); " +
+              "insert into __test (id, name) overriding system value values (100, 'n3'); " +
               "select setval('__test_id_seq', 1);");
 
             // This fails because name cannot be null, effectively rolling back the transaction.
